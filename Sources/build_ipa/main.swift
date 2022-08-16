@@ -54,7 +54,7 @@ struct BuildIpa: ParsableCommand {
                    buildNumber:String,
                    context:CustomContext,
                    pwd:String) throws {
-        let home = try Configuration().home
+        let home = try Configuration(uploadZealot: uploadZealot).home
         guard FileManager.default.fileExists(atPath: ipaFile) else {
             throw "\(ipaFile)不存在,请检查编译命令"
         }
@@ -94,9 +94,9 @@ struct BuildIpa: ParsableCommand {
     
 
     func uploadApkInZealot(ipaFile:String, changeLog:String) throws -> Bool {
-        let zealotToken = try Configuration().zealotToken
-        let channelKey = try Configuration().zealotChannelKey
-        let uploadHost = try Configuration().zealotHost
+        let zealotToken = try Configuration(uploadZealot: uploadZealot).zealotToken
+        let channelKey = try Configuration(uploadZealot: uploadZealot).zealotChannelKey
+        let uploadHost = try Configuration(uploadZealot: uploadZealot).zealotHost
         let semaphore = DispatchSemaphore(value: 0)
         let uploadUrl = "\(uploadHost)/api/apps/upload?token=\(zealotToken)"
         let mode = mode != .release ? "adhoc" : "release"
