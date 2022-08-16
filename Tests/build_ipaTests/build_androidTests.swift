@@ -1,5 +1,4 @@
 import XCTest
-@testable import build_android
 
 final class build_androidTests: XCTestCase {
     func testExample() throws {

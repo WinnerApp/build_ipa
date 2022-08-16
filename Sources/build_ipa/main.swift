@@ -18,6 +18,10 @@ struct BuildIpa: ParsableCommand {
     @Argument(help:"设置主要的版本号 比如 1.0.0")
     var buildName:String
     
+    @Flag(help: "是否上传 Zealot 默认开启")
+    var isUploadZealot: Bool = true
+    
+    
     mutating func run() throws {
         var context = CustomContext()
         context.env = ProcessInfo.processInfo.environment
@@ -38,10 +42,12 @@ struct BuildIpa: ParsableCommand {
         try context.runAndPrint("fastlane",
                                 "beta",
                                 "archive_path:\(pwd)/build/ios/archive/Runner.xcarchive")
-        try uploadApk(ipaFile: "\(pwd)/ios/Runner.ipa",
-                      buildNumber: buildNumber,
-                      context: context,
-                      pwd: pwd)
+        if isUploadZealot {
+            try uploadApk(ipaFile: "\(pwd)/ios/Runner.ipa",
+                          buildNumber: buildNumber,
+                          context: context,
+                          pwd: pwd)
+        }
     }
     
     func uploadApk(ipaFile:String,
