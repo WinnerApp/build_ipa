@@ -19,7 +19,7 @@ struct BuildIpa: ParsableCommand {
     var buildName:String
     
     @Flag(help: "是否上传 Zealot 默认开启")
-    var isUploadZealot: Bool = true
+    var uploadZealot: Bool = false
     
     
     mutating func run() throws {
@@ -42,7 +42,7 @@ struct BuildIpa: ParsableCommand {
         try context.runAndPrint("fastlane",
                                 "beta",
                                 "archive_path:\(pwd)/build/ios/archive/Runner.xcarchive")
-        if isUploadZealot {
+        if uploadZealot {
             try uploadApk(ipaFile: "\(pwd)/ios/Runner.ipa",
                           buildNumber: buildNumber,
                           context: context,
