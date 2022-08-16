@@ -25,7 +25,7 @@ struct BuildIpa: ParsableCommand {
     mutating func run() throws {
         var context = CustomContext()
         context.env = ProcessInfo.processInfo.environment
-        let configuration = try Configuration()
+        let configuration = try Configuration(uploadZealot: uploadZealot)
         let pwd = configuration.pwd
         let buildNumber = "\(Int(Date().timeIntervalSince1970))"
         context.currentdirectory = pwd

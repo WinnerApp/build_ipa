@@ -14,7 +14,7 @@ class Configuration {
     let zealotChannelKey: String
     let zealotHost: String
     
-    init() throws {
+    init(uploadZealot:Bool) throws {
         guard let pwd = ProcessInfo.processInfo.environment["PWD"] else {
             throw "$PWD为空"
         }
@@ -23,17 +23,23 @@ class Configuration {
             throw "$HOME为空"
         }
         self.home = home
-        guard let zealotToken = ProcessInfo.processInfo.environment["ZEALOT_TOKEN"] else {
-            throw "ZEALOT_TOKEN不存在"
+        if (uploadZealot) {
+            guard let zealotToken = ProcessInfo.processInfo.environment["ZEALOT_TOKEN"] else {
+                throw "ZEALOT_TOKEN不存在"
+            }
+            self.zealotToken = zealotToken
+            guard let channelKey = ProcessInfo.processInfo.environment["ZEALOT_CHANNEL_KEY"] else {
+                throw "ZEALOT_CHANNEL_KEY不存在"
+            }
+            self.zealotChannelKey = channelKey
+            guard let uploadHost = ProcessInfo.processInfo.environment["ZEALOT_HOST"] else {
+                throw "ZEALOT_HOST 不存在"
+            }
+            self.zealotHost = uploadHost
+        } else {
+            self.zealotHost = ""
+            self.zealotToken = ""
+            self.zealotChannelKey = ""
         }
-        self.zealotToken = zealotToken
-        guard let channelKey = ProcessInfo.processInfo.environment["ZEALOT_CHANNEL_KEY"] else {
-            throw "ZEALOT_CHANNEL_KEY不存在"
-        }
-        self.zealotChannelKey = channelKey
-        guard let uploadHost = ProcessInfo.processInfo.environment["ZEALOT_HOST"] else {
-            throw "ZEALOT_HOST 不存在"
-        }
-        self.zealotHost = uploadHost
     }
 }
