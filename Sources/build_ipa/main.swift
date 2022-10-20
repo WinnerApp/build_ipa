@@ -39,9 +39,14 @@ struct BuildIpa: ParsableCommand {
                         buildNumber
         )
         context.currentdirectory = pwd + "/ios"
+        var exportMethod = "ad-hoc"
+        if mode == .release {
+            exportMethod = "app-store"
+        }
         try context.runAndPrint("fastlane",
                                 "beta",
-                                "archive_path:\(pwd)/build/ios/archive/Runner.xcarchive")
+                                "archive_path:\(pwd)/build/ios/archive/Runner.xcarchive",
+        "export_method:\(exportMethod)")
         if uploadZealot {
             try uploadApk(ipaFile: "\(pwd)/ios/Runner.ipa",
                           buildNumber: buildNumber,
