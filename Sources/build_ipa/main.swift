@@ -21,6 +21,9 @@ struct BuildIpa: ParsableCommand {
     @Flag(help: "是否上传 Zealot 默认开启")
     var uploadZealot: Bool = false
     
+    @Option(help: "请输入自定义的导出方法")
+    var exportMethod:String?
+    
     
     mutating func run() throws {
         var context = CustomContext()
@@ -39,14 +42,15 @@ struct BuildIpa: ParsableCommand {
                         buildNumber
         )
         context.currentdirectory = pwd + "/ios"
-        var exportMethod = "ad-hoc"
+        var _exportMethod = "ad-hoc"
         if mode == .release {
-            exportMethod = "app-store"
+            _exportMethod = "app-store"
         }
+        _exportMethod = exportMethod ?? _exportMethod
         try context.runAndPrint("fastlane",
                                 "beta",
                                 "archive_path:\(pwd)/build/ios/archive/Runner.xcarchive",
-        "export_method:\(exportMethod)")
+        "export_method:\(_exportMethod)")
         if uploadZealot {
             try uploadApk(ipaFile: "\(pwd)/ios/Runner.ipa",
                           buildNumber: buildNumber,
