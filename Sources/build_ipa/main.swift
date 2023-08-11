@@ -24,6 +24,9 @@ struct BuildIpa: ParsableCommand {
     @Option(help: "请输入自定义的导出方法")
     var exportMethod:String?
     
+    @Option(help: "请输入自定义 ipa 路径")
+    var ipaPath:String?
+    
     
     mutating func run() throws {
         var context = CustomContext()
@@ -32,27 +35,36 @@ struct BuildIpa: ParsableCommand {
         let pwd = configuration.pwd
         let buildNumber = "\(Int(Date().timeIntervalSince1970))"
         context.currentdirectory = pwd
-        try runAndPrint("flutter",
-                        "build",
-                        "ipa",
-                        "--\(mode.rawValue)",
-                        "--build-name",
-                        buildName,
-                        "--build-number",
-                        buildNumber
-        )
-        context.currentdirectory = pwd + "/ios"
-        var _exportMethod = "ad-hoc"
-        if mode == .release {
-            _exportMethod = "app-store"
+        
+        var _ipaPath:String = ""
+        if let ipaPath {
+            _ipaPath = ipaPath
+        } else {
+            try runAndPrint("flutter",
+                            "build",
+                            "ipa",
+                            "--\(mode.rawValue)",
+                            "--build-name",
+                            buildName,
+                            "--build-number",
+                            buildNumber
+            )
+            context.currentdirectory = pwd + "/ios"
+            var _exportMethod = "ad-hoc"
+            if mode == .release {
+                _exportMethod = "app-store"
+            }
+            _exportMethod = exportMethod ?? _exportMethod
+            try context.runAndPrint("fastlane",
+                                    "beta",
+                                    "archive_path:\(pwd)/build/ios/archive/Runner.xcarchive",
+                                    "export_method:\(_exportMethod)")
+            _ipaPath = "\(pwd)/ios/Runner.ipa"
         }
-        _exportMethod = exportMethod ?? _exportMethod
-        try context.runAndPrint("fastlane",
-                                "beta",
-                                "archive_path:\(pwd)/build/ios/archive/Runner.xcarchive",
-        "export_method:\(_exportMethod)")
+        
+        
         if uploadZealot {
-            try uploadApk(ipaFile: "\(pwd)/ios/Runner.ipa",
+            try uploadApk(ipaFile: _ipaPath,
                           buildNumber: buildNumber,
                           context: context,
                           pwd: pwd)
