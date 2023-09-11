@@ -125,7 +125,8 @@ struct BuildIpa: ParsableCommand {
         let domain = uploadHost.replacingOccurrences(of: "https://", with: "")
         let trustManager = ServerTrustManager(evaluators: [domain:DisabledTrustEvaluator()])
         let session = Session(serverTrustManager:trustManager)
-        session.sessionConfiguration.timeoutIntervalForRequest = 10 * 60
+        /// 修改超时时间从 10 分钟到 30 分钟 防止一些包大小比较大
+        session.sessionConfiguration.timeoutIntervalForRequest = 30 * 60
         session.upload(multipartFormData: { fromData in
             print("""
             channel_key \(channelKey)
